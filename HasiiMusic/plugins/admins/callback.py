@@ -7,11 +7,11 @@ from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
 from config import (
     BANNED_USERS,
     lyrical,
-    SOUNCLOUD_IMG_URL,
-    STREAM_IMG_URL,
+    SOUNCLOUD_IMG_URL,  # Bunlar artık kullanılmayacak ama kalsın
+    STREAM_IMG_URL,  # Bunlar artık kullanılmayacak ama kalsın
     SUPPORT_CHAT,
-    TELEGRAM_AUDIO_URL,
-    TELEGRAM_VIDEO_URL,
+    TELEGRAM_AUDIO_URL,  # Bunlar artık kullanılmayacak ama kalsın
+    TELEGRAM_VIDEO_URL,  # Bunlar artık kullanılmayacak ama kalsın
     adminlist,
     confirmer,
     votemode,
@@ -39,7 +39,7 @@ from HasiiMusic.utils.decorators import ActualAdminCB, languageCB
 from HasiiMusic.utils.formatters import seconds_to_min
 from HasiiMusic.utils.inline import close_markup, stream_markup, stream_markup_timer
 from HasiiMusic.utils.stream.autoclear import auto_clean
-from HasiiMusic.utils.thumbnails import get_thumb
+  # Artık kullanılmayacak
 
 
 checker = {}
@@ -75,7 +75,7 @@ async def handle_upvote(callback: CallbackQuery, chat_id: int, counter, _):
             stored = confirmer[chat_id][message_id]
             current = db[chat_id][0]
         except Exception:
-            return await callback.edit_message_text("ғᴀɪʟᴇᴅ.")
+            return await callback.edit_message_text("ʙᴀşᴀʀısız.")
         try:
             if current["vidid"] != stored["vidid"] or current["file"] != stored["file"]:
                 return await callback.edit_message_text(_["admin_35"])
@@ -85,7 +85,7 @@ async def handle_upvote(callback: CallbackQuery, chat_id: int, counter, _):
             await callback.edit_message_text(_["admin_37"].format(required_upvotes))
         except Exception:
             pass
-        return counter if counter is not None else "UpVote", "ᴜᴘᴠᴏᴛᴇs"
+        return counter if counter is not None else "UpVote", "ᴏʏʟᴀʀ"
     else:
         if user_id in upvoters[chat_id][message_id]:
             await callback.answer(_["admin_38"], show_alert=True)
@@ -94,7 +94,7 @@ async def handle_upvote(callback: CallbackQuery, chat_id: int, counter, _):
         markup = InlineKeyboardMarkup([
             [InlineKeyboardButton(
                 text=f"👍 {current_upvotes}",
-                callback_data=f"ADMIN  UpVote|{chat_id}_{counter if counter is not None else chat_id}"
+                callback_data=f"ADMIN UpVote|{chat_id}_{counter if counter is not None else chat_id}"
             )]
         ])
         await callback.answer(_["admin_40"], show_alert=True)
@@ -109,12 +109,12 @@ async def unban_assistant(_, callback: CallbackQuery):
     try:
         await app.unban_chat_member(chat_id, userbot.id)
         await callback.answer(
-            "ᴍʏ ᴀssɪsᴛᴀɴᴛ ɪᴅ ᴜɴʙᴀɴɴᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ🥰🥳\n\n➻ ɴᴏᴡ ʏᴏᴜ ᴄᴀɴ ᴘʟᴀʏ sᴏɴɢs🫠🔉\n\nTʜᴀɴᴋ ʏᴏᴜ💗",
+            "ᴀsɪsᴛᴀɴ hesabımın yasağı başarıyla kaldırıldı🥰🥳\n\n➻ ᴀʀᴛıᴋ şarkı çalabilirsiniz🫠🔉\n\nᴛᴇşᴇᴋᴋüʀʟᴇʀ💗",
             show_alert=True,
         )
     except Exception:
         await callback.answer(
-            "Fᴀɪʟᴇᴅ ᴛᴏ ᴜɴʙᴀɴ ᴍʏ ᴀssɪsᴛᴀɴᴛ ʙᴇᴄᴀᴜsᴇ ɪ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ʙᴀɴ ᴘᴏᴡᴇʀ\n\n➻ Pʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴍᴇ ʙᴀɴ ᴘᴏᴡᴇʀ sᴏ ᴛʜᴀᴛ ɪ ᴄᴀɴ ᴜɴʙᴀɴ ᴍʏ ᴀssɪsᴛᴀɴᴛ ɪᴅ",
+            "ᴀsɪsᴛᴀɴ hesabımın yasağını kaldıramadım çünkü ban yetkim yok\n\n➻ ʟüᴛғᴇɴ ban yetkisi verin ki asistan hesabımın yasağını kaldırabileyim",
             show_alert=True,
         )
 
@@ -219,7 +219,7 @@ async def handle_skip_replay(callback: CallbackQuery, _, chat_id: int, command: 
         return await callback.answer(_["queue_2"], show_alert=True)
 
     if command == "Skip":
-        text_msg = f"➻ sᴛʀᴇᴀᴍ sᴋɪᴩᴩᴇᴅ 🎄\n│ \n└ʙʏ : {user_mention} 🥀"
+        text_msg = f"➻ ʏᴀʏıɴ ᴀᴛʟᴀɴᴅı 🎄\n│ \n└ᴋɪşɪ : {user_mention} 🥀"
         try:
             popped = playlist.pop(0)
             if popped:
@@ -242,7 +242,7 @@ async def handle_skip_replay(callback: CallbackQuery, _, chat_id: int, command: 
             except Exception:
                 return
     else:
-        text_msg = f"➻ sᴛʀᴇᴀᴍ ʀᴇ-ᴘʟᴀʏᴇᴅ 🎄\n│ \n└ʙʏ : {user_mention} 🥀"
+        text_msg = f"➻ ʏᴀʏıɴ ʏᴇɴɪᴅᴇɴ ᴏʏɴᴀᴛıʟᴅı 🎄\n│ \n└ᴋɪşɪ : {user_mention} 🥀"
 
     await callback.answer()
 
@@ -281,10 +281,11 @@ async def handle_skip_replay(callback: CallbackQuery, _, chat_id: int, command: 
         except Exception:
             return await callback.message.reply_text(_["call_6"])
         buttons = stream_markup(_, chat_id)
-        img = await get_thumb(videoid)
-        run = await callback.message.reply_photo(
-            photo=img,
-            caption=_["stream_1"].format(f"https://t.me/{app.username}?start=info_{videoid}", title[:23], duration, user),
+        
+        # Resimsiz olarak değiştirildi
+        # img = await get_thumb(videoid)
+        run = await callback.message.reply_text(
+            text=_["stream_1"].format(f"https://t.me/{app.username}?start=info_{videoid}", title, duration, user),
             reply_markup=InlineKeyboardMarkup(buttons)
         )
         db[chat_id][0]["mystic"] = run
@@ -306,10 +307,11 @@ async def handle_skip_replay(callback: CallbackQuery, _, chat_id: int, command: 
         except Exception:
             return await mystic.edit_text(_["call_6"])
         buttons = stream_markup(_, chat_id)
-        img = await get_thumb(videoid)
-        run = await callback.message.reply_photo(
-            photo=img,
-            caption=_["stream_1"].format(f"https://t.me/{app.username}?start=info_{videoid}", title[:23], duration, user),
+        
+        # Resimsiz olarak değiştirildi
+        # img = await get_thumb(videoid)
+        run = await callback.message.reply_text(
+            text=_["stream_1"].format(f"https://t.me/{app.username}?start=info_{videoid}", title, duration, user),
             reply_markup=InlineKeyboardMarkup(buttons)
         )
         db[chat_id][0]["mystic"] = run
@@ -323,9 +325,10 @@ async def handle_skip_replay(callback: CallbackQuery, _, chat_id: int, command: 
         except Exception:
             return await callback.message.reply_text(_["call_6"])
         buttons = stream_markup(_, chat_id)
-        run = await callback.message.reply_photo(
-            photo=STREAM_IMG_URL,
-            caption=_["stream_2"].format(user),
+        
+        # Resimsiz olarak değiştirildi
+        run = await callback.message.reply_text(
+            text=_["stream_2"].format(user),
             reply_markup=InlineKeyboardMarkup(buttons)
         )
         db[chat_id][0]["mystic"] = run
@@ -344,30 +347,31 @@ async def handle_skip_replay(callback: CallbackQuery, _, chat_id: int, command: 
             await JARVIS.skip_stream(chat_id, queued, video=status, image=image)
         except Exception:
             return await callback.message.reply_text(_["call_6"])
+        
         if videoid == "telegram":
             buttons = stream_markup(_, chat_id)
-            run = await callback.message.reply_photo(
-                photo=(TELEGRAM_AUDIO_URL if str(streamtype) == "audio" else TELEGRAM_VIDEO_URL),
-                caption=_["stream_1"].format(SUPPORT_CHAT, title[:23], duration, user),
+            # Resimsiz olarak değiştirildi
+            run = await callback.message.reply_text(
+                text=_["stream_1"].format(SUPPORT_CHAT, title, duration, user),
                 reply_markup=InlineKeyboardMarkup(buttons)
             )
             db[chat_id][0]["mystic"] = run
             db[chat_id][0]["markup"] = "tg"
         elif videoid == "soundcloud":
             buttons = stream_markup(_, chat_id)
-            run = await callback.message.reply_photo(
-                photo=(SOUNCLOUD_IMG_URL if str(streamtype) == "audio" else TELEGRAM_VIDEO_URL),
-                caption=_["stream_1"].format(SUPPORT_CHAT, title[:23], duration, user),
+            # Resimsiz olarak değiştirildi
+            run = await callback.message.reply_text(
+                text=_["stream_1"].format(SUPPORT_CHAT, title, duration, user),
                 reply_markup=InlineKeyboardMarkup(buttons)
             )
             db[chat_id][0]["mystic"] = run
             db[chat_id][0]["markup"] = "tg"
         else:
             buttons = stream_markup(_, chat_id)
-            img = await get_thumb(videoid)
-            run = await callback.message.reply_photo(
-                photo=img,
-                caption=_["stream_1"].format(f"https://t.me/{app.username}?start=info_{videoid}", title[:23], duration, user),
+            # Resimsiz olarak değiştirildi
+            # img = await get_thumb(videoid)
+            run = await callback.message.reply_text(
+                text=_["stream_1"].format(f"https://t.me/{app.username}?start=info_{videoid}", duration, duration, user),
                 reply_markup=InlineKeyboardMarkup(buttons)
             )
             db[chat_id][0]["mystic"] = run
@@ -392,8 +396,8 @@ async def handle_seek(callback: CallbackQuery, _, chat_id: int, command: str, us
         if (duration_played - duration_to_skip) <= 10:
             bet = seconds_to_min(duration_played)
             return await callback.answer(
-                f"» ʙᴏᴛ ɪs ᴜɴᴀʙʟᴇ ᴛᴏ sᴇᴇᴋ ʙᴇᴄᴀᴜsᴇ ᴛʜᴇ ᴅᴜʀᴀᴛɪᴏɴ ᴇxᴄᴇᴇᴅs.\n\n"
-                f"ᴄᴜʀʀᴇɴᴛʟʏ ᴩʟᴀʏᴇᴅ :** {bet}** ᴍɪɴᴜᴛᴇs ᴏᴜᴛ ᴏғ **{duration}** ᴍɪɴᴜᴛᴇs.",
+                f"» süre aşıldığı için bot ileri/geri saramıyor.\n\n"
+                f"ᴍᴇᴠᴄᴜᴛ ᴏʏɴᴀᴛᴍᴀ :** {bet}** / **{duration}** dakika.",
                 show_alert=True
             )
         to_seek = duration_played - duration_to_skip + 1
@@ -401,8 +405,8 @@ async def handle_seek(callback: CallbackQuery, _, chat_id: int, command: str, us
         if (duration_seconds - (duration_played + duration_to_skip)) <= 10:
             bet = seconds_to_min(duration_played)
             return await callback.answer(
-                f"» ʙᴏᴛ ɪs ᴜɴᴀʙʟᴇ ᴛᴏ sᴇᴇᴋ ʙᴇᴄᴀᴜsᴇ ᴛʜᴇ ᴅᴜʀᴀᴛɪᴏɴ ᴇxᴄᴇᴇᴅs.\n\n"
-                f"ᴄᴜʀʀᴇɴᴛʟʏ ᴩʟᴀʏᴇᴅ :** {bet}** ᴍɪɴᴜᴛᴇs ᴏᴜᴛ ᴏғ **{duration}** ᴍɪɴᴜᴛᴇs.",
+                f"» süre aşıldığı için bot ileri/geri saramıyor.\n\n"
+                f"ᴍᴇᴠᴄᴜᴛ ᴏʏɴᴀᴛᴍᴀ :** {bet}** / **{duration}** dakika.",
                 show_alert=True
             )
         to_seek = duration_played + duration_to_skip + 1
@@ -428,7 +432,7 @@ async def handle_seek(callback: CallbackQuery, _, chat_id: int, command: str, us
     else:
         db[chat_id][0]["played"] += duration_to_skip
     seek_message = _["admin_25"].format(seconds_to_min(to_seek))
-    await mystic.edit_text(f"{seek_message}\n\nᴄʜᴀɴɢᴇs ᴅᴏɴᴇ ʙʏ : {user_mention} !")
+    await mystic.edit_text(f"{seek_message}\n\nᴅᴇğɪşɪᴋʟɪğɪ ʏᴀᴘᴀɴ : {user_mention} !")
 
 
 async def markup_timer():
@@ -472,20 +476,20 @@ async def markup_timer():
 asyncio.create_task(markup_timer())
 
 
-# ── Close Button Callback ──
+# ── Kapatma Butonu Geri Çağırması ──
 @app.on_callback_query(filters.regex("close") & ~BANNED_USERS)
 async def close_menu(_, query: CallbackQuery):
     try:
         await query.answer()
         await query.message.delete()
-        msg = await query.message.reply_text(f"✅ ᴄʟᴏꜱᴇᴅ ʙʏ : {query.from_user.mention}")
+        msg = await query.message.reply_text(f"✅ ᴋᴀᴘᴀᴛᴀɴ : {query.from_user.mention}")
         await asyncio.sleep(2)
         await msg.delete()
     except:
         pass
-    
+        
 
-# ── Stop Download Callback ──
+# ── İndirmeyi Durdur Geri Çağırması ──
 @app.on_callback_query(filters.regex("stop_downloading") & ~BANNED_USERS)
 @ActualAdminCB
 async def stop_download(_, query: CallbackQuery, _lang):
