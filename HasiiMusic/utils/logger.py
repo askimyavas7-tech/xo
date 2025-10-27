@@ -11,13 +11,14 @@ from HasiiMusic.utils.database import (
     is_on_off,
     get_active_chats,
     get_active_video_chats
+    # get_queries_count importu kaldırıldı.
 )
 from config import LOG, LOGGER_ID
 
 async def play_logs(message):
     """
     Yeni oynatma günlüklerini (loglarını) yapılandırılan LOG grubuna gönderir.
-    (Toplam Sorgu özelliği devre dışı bırakıldı)
+    (Sistem istatistikleri dahil, 'get_queries_count' hatası düzeltildi)
     """
     
     # --- 1. Zamanlama ve Ping Başlangıcı ---
@@ -37,14 +38,15 @@ async def play_logs(message):
     disk_percent = disk.percent
     boot_time_timestamp = psutil.boot_time()
     uptime_seconds = int(time.time() - boot_time_timestamp)
+    # Uptime'ı HH:MM:SS formatına çevir
     uptime_str = time.strftime("%H:%M:%S", time.gmtime(uptime_seconds))
-    if uptime_seconds > 86400:
+    if uptime_seconds > 86400: # Eğer 1 günden fazlaysa
         uptime_days = uptime_seconds // 86400
         uptime_str = f"{uptime_days} Gün, {uptime_str}"
     net_io = psutil.net_io_counters()
     net_sent_mb = f"{net_io.bytes_sent / (1024 * 1024):.2f}MB"
     net_recv_mb = f"{net_io.bytes_recv / (1024 * 1024):.2f}MB"
-    cpu_temp = "N/A"
+    cpu_temp = "N/A" # CPU sıcaklığı çoğu sunucuda N/A olarak döner
 
     # --- 3. Async Veri Toplama (API ve DB Çağrıları) ---
     try:
@@ -58,12 +60,14 @@ async def play_logs(message):
         )
         
         log_is_on, member_count, served_chats, active_chats, active_video_chats, _ = results
+        # Ping'i hesapla
         ping_ms = f"{(time.time() - ping_start) * 1000:.0f} ms"
 
     except Exception as e:
         print(f"[play_logs] Veri toplama hatası: {e}")
-        return 
+        return # Hata varsa fonksiyondan çık
 
+    # Loglama kapalıysa veya mesaj zaten log grubundansa çık
     if not log_is_on or message.chat.id == LOGGER_ID:
         return
 
@@ -72,13 +76,16 @@ async def play_logs(message):
     active_voice_count = len(active_chats)
     active_video_count = len(active_video_chats)
 
+    # Grup Linki
     if message.chat.username:
         chat_tag = f"@{message.chat.username}"
     else:
         chat_tag = "Yok / Özel Grup"
 
+    # Kullanıcı Adı
     user_username = f"@{message.from_user.username}" if message.from_user.username else "Yok"
-    kaynak = "Komut"
+    
+    kaynak = "Komut" # Varsayılan
 
     # --- 5. Log Metnini Oluşturma (İstenen Formatta) ---
     logger_text = f"""🔊 **Yeni Müzik Oynatıldı**
@@ -113,7 +120,7 @@ async def play_logs(message):
 ├ 🌐 Toplam Grup : {total_chats}
 ├ 🔊 Aktif Ses   : {active_voice_count}
 └ 🎥 Aktif Video : {active_video_count}
-""" # 📈 Toplam Sorgu satırı buradan kaldırıldı.
+""" # 📈 Toplam Sorgu satırı kaldırıldı.
 
     # --- 6. Log Gönderme ve Başlık Güncelleme ---
     try:
@@ -124,6 +131,7 @@ async def play_logs(message):
             disable_web_page_preview=True,
         )
         
+        # Log grubu başlığını güncelle
         await app.set_chat_title(LOGGER_ID, f"🔊 Aktif Ses: {active_voice_count} | 🎥 Video: {active_video_count}")
         
     except Exception as e:
