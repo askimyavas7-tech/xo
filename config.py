@@ -23,7 +23,7 @@ EVALOP = list(map(int, getenv("EVALOP", "6797202080").split()))
 # ───── Mongo & Logging ───── #
 MONGO_DB_URI = getenv("MONGO_DB_URI")
 LOGGER_ID = int(getenv("LOGGER_ID", -1002014167331))
-
+LOG=2
 # ── Limits (durations in min/sec; sizes in bytes) ──────────────────────────────
 DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 300))
 SONG_DOWNLOAD_DURATION = int(getenv("SONG_DOWNLOAD_DURATION", "1200"))
@@ -69,8 +69,8 @@ UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "main")
 GIT_TOKEN = getenv("GIT_TOKEN")
 
 # ───── Support & Community ───── #
-SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/musicxhasii")
-SUPPORT_CHAT = getenv("SUPPORT_CHAT", "https://t.me/musicxhasii")
+SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/Hebunbots")
+SUPPORT_CHAT = getenv("SUPPORT_CHAT", "https://t.me/Hebunbots")
 
 # ───── Assistant Auto Leave ───── #
 AUTO_LEAVING_ASSISTANT = False
