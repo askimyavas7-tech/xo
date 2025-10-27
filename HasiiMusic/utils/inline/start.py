@@ -4,7 +4,7 @@ from HasiiMusic import app
 
 
 def start_panel(_):
-    return [[InlineKeyboardButton(text=_["S_B_4"], url="https://t.me/maviduyuru")]]
+    return [[InlineKeyboardButton(text=_["S_B_4"], url="https://t.me/Hebunbots")]]
 
 
 def private_panel(_):
