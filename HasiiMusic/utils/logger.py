@@ -1,4 +1,4 @@
-import psutil, platform, time, socket
+import psutil, time
 from datetime import datetime
 from pyrogram.enums import ParseMode
 from HasiiMusic import app
@@ -10,13 +10,13 @@ from HasiiMusic.utils.database import (
 )
 from config import LOG, LOGGER_ID
 
-# 🔰 Bot başlangıç zamanı
+# Bot başlangıç zamanı
 BOT_START_TIME = time.time()
-BOT_VERSION = "4.0 Server Stats Edition 💎"
+BOT_VERSION = "3.0.1 Premium"
 
 
 async def send_deluxe_log(message, event_type: str, extra_info: str = None):
-    """💎 HasiiMusic Log Panel 4.0 — Sistem + Sunucu + Uptime + Ping"""
+    """💎 HasiiMusic Deluxe Log Panel 3.0 - Sistem, Ping, Uptime, Versiyon dahil"""
     chat_id = message.chat.id
     uye_sayisi = await app.get_chat_members_count(chat_id)
     toplam_grup = len(await get_served_chats())
@@ -26,7 +26,7 @@ async def send_deluxe_log(message, event_type: str, extra_info: str = None):
     if not await is_on_off(LOG):
         return
 
-    # 🔗 Grup linki
+    # Grup linki
     if message.chat.username:
         chat_link = f"https://t.me/{message.chat.username}"
     else:
@@ -36,39 +36,31 @@ async def send_deluxe_log(message, event_type: str, extra_info: str = None):
         except Exception:
             chat_link = "🔒 Gizli Grup (Link alınamadı)"
 
-    # 👤 Kullanıcı bilgisi
+    # Kullanıcı adı kontrolü
     username = f"@{message.from_user.username}" if message.from_user.username else "🌸 Kullanıcı Adı Yok"
+
+    # Tarih
     tarih = message.date.strftime("%d.%m.%Y • %H:%M:%S")
 
-    # 🧠 Sistem istatistikleri
+    # Sistem istatistikleri
     cpu = psutil.cpu_percent(interval=0.5)
     ram = psutil.virtual_memory().percent
     disk = psutil.disk_usage("/").percent
-    cpu_count = psutil.cpu_count(logical=True)
 
-    # ⏱ Uptime hesaplama
+    # Uptime hesaplama
     uptime_seconds = int(time.time() - BOT_START_TIME)
     uptime_str = time.strftime("%H:%M:%S", time.gmtime(uptime_seconds))
 
-    # 📶 Ping ölçümü
+    # Ping ölçümü
     start = time.time()
     await app.get_me()
     ping_ms = int((time.time() - start) * 1000)
 
-    # 🖥 Sistem ve sunucu bilgileri
-    system = platform.system()
-    release = platform.release()
-    hostname = socket.gethostname()
-    try:
-        ip_address = socket.gethostbyname(hostname)
-    except Exception:
-        ip_address = "Bilinmiyor"
-
-    # 💎 Log Mesajı (HTML Formatlı)
+    # Deluxe HTML Log
     logger_text = f"""
-<pre>╔══════════════════════════════════╗</pre>
+<pre>╔══════════════════════════════╗</pre>
 <b>💫 𝐇𝐀𝐒𝐈𝐈 𝐌𝐔𝐒𝐈𝐂 - 𝐋𝐎𝐆 𝐏𝐀𝐍𝐄𝐋 💫</b>
-<pre>╚══════════════════════════════════╝</pre>
+<pre>╚══════════════════════════════╝</pre>
 
 🎛 <b>Olay Türü:</b> <code>{event_type}</code>
 🏷 <b>Grup:</b> <a href="{chat_link}">{message.chat.title}</a> <code>[{message.chat.id}]</code>  
@@ -87,15 +79,9 @@ async def send_deluxe_log(message, event_type: str, extra_info: str = None):
 
 <pre>──────────────────────────────</pre>
 🧠 <b>Sistem Kaynakları</b>  
-⚙️ <b>CPU:</b> <code>{cpu}%</code> ({cpu_count} Çekirdek)  
+⚙️ <b>CPU:</b> <code>{cpu}%</code>  
 💾 <b>RAM:</b> <code>{ram}%</code>  
 💽 <b>Disk:</b> <code>{disk}%</code>  
-
-<pre>──────────────────────────────</pre>
-🖥 <b>Sunucu Bilgisi</b>  
-🌐 <b>İşletim Sistemi:</b> <code>{system} {release}</code>  
-📡 <b>Host Adı:</b> <code>{hostname}</code>  
-📍 <b>IP Adresi:</b> <code>{ip_address}</code>
 
 <pre>──────────────────────────────</pre>
 ⏱ <b>Uptime:</b> <code>{uptime_str}</code>  
@@ -109,7 +95,7 @@ async def send_deluxe_log(message, event_type: str, extra_info: str = None):
 💠 <i>“Müziği Hisset, Sessizliği Duy.”</i>
 """
 
-    # 📩 Log grubuna gönder
+    # Gönderim
     if message.chat.id != LOGGER_ID:
         try:
             await app.send_message(
