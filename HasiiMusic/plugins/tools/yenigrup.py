@@ -3,7 +3,7 @@ from datetime import datetime
 from pyrogram import Client, filters
 from pyrogram.types import Message, ChatMemberUpdated
 from pyrogram.enums import ChatMemberStatus
-from config import LOGGER_ID
+from config import LOGGER_ID  # LOG_GROUP_ID yerine LOGGER_ID kullanıyoruz
 from HasiiMusic import app
 
 
@@ -32,7 +32,7 @@ async def send_log(text: str, user_id: int = None, chat=None):
             await download_user_photo(user_id)
 
         # Gruba mesaj at
-        await app.send_message(LOG_GROUP_ID, f"🕒 `{timestamp}`\n\n{text}")
+        await app.send_message(LOGGER_ID, f"🕒 `{timestamp}`\n\n{text}")
 
         # Dosyaya yaz
         with open("logs.txt", "a", encoding="utf-8") as f:
