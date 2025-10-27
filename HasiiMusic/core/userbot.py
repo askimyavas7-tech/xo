@@ -12,7 +12,7 @@ GROUPS_TO_JOIN = [
 ]
 
 
-# Initialize userbots
+# Kullanıcı botlarını başlat
 class Userbot:
     def __init__(self):
         self.one = Client(
@@ -74,11 +74,11 @@ class Userbot:
 
             try:
                 await client.send_message(
-                    config.LOGGER_ID, f"Hasii's Assistant {index} Started"
+                    config.LOGGER_ID, f"Hasii'nin {index} Numaralı Asistanı Başlatıldı"
                 )
             except Exception:
                 LOGGER(__name__).error(
-                    f"Assistant {index} can't access the log group. Check permissions!"
+                    f"Asistan {index} log grubuna erişemiyor. İzinleri kontrol edin!"
                 )
                 exit()
 
@@ -86,13 +86,13 @@ class Userbot:
             client.id, client.name, client.username = me.id, me.first_name, me.username
             assistantids.append(me.id)
 
-            LOGGER(__name__).info(f"Assistant {index} Started as {client.name}")
+            LOGGER(__name__).info(f"Asistan {index}, {client.name} olarak başlatıldı")
 
         except Exception as e:
-            LOGGER(__name__).error(f"Failed to start Assistant {index}: {e}")
+            LOGGER(__name__).error(f"Asistan {index} başlatılamadı: {e}")
 
     async def start(self):
-        LOGGER(__name__).info("Starting Hasii's Assistants...")
+        LOGGER(__name__).info("Hasii'nin Asistanları Başlatılıyor...")
         await self.start_assistant(self.one, 1)
         await self.start_assistant(self.two, 2)
         await self.start_assistant(self.three, 3)
@@ -100,7 +100,7 @@ class Userbot:
         await self.start_assistant(self.five, 5)
 
     async def stop(self):
-        LOGGER(__name__).info("Stopping Assistants...")
+        LOGGER(__name__).info("Asistanlar Durduruluyor...")
         try:
             if config.STRING1:
                 await self.one.stop()
@@ -113,4 +113,4 @@ class Userbot:
             if config.STRING5:
                 await self.five.stop()
         except Exception as e:
-            LOGGER(__name__).error(f"Error while stopping assistants: {e}")
+            LOGGER(__name__).error(f"Asistanları durdururken hata oluştu: {e}")
