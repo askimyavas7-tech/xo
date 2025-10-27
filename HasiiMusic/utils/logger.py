@@ -1,55 +1,175 @@
+import asyncio
+import time
+import platform
+from datetime import datetime
+
+# Sistem istatistikleri (CPU, RAM, Disk) için bu kütüphane gerekir.
+# Eğer yüklü değilse: pip install psutil
+import psutil
+
+# Orijinal importlarınız
 from pyrogram.enums import ParseMode
-
-from HasiiMusic import app
-from HasiiMusic.utils.database import is_on_off
-from config import LOGGER_ID
-
-#############################################
 from HasiiMusic import app
 from HasiiMusic.utils.database import (
     get_served_chats,
     is_on_off,
+    get_active_chats,
+    get_active_video_chats,
+    # "Toplam Sorgu" sayısını almak için bu fonksiyonun 
+    # veritabanı dosyanızda (utils/database) olduğunu varsayıyorum.
+    get_queries_count 
 )
-from HasiiMusic.utils.database import get_active_chats, get_active_video_chats
 from config import LOG, LOGGER_ID
 
+# streamtype parametresi kullanılmadığı için fonksiyondan kaldırıldı.
+async def play_logs(message):
+    """
+    Yeni oynatma günlüklerini (loglarını) yapılandırılan LOG grubuna gönderir.
+    (Kullanıcının istediği detaylı sistem istatistik formatına göre güncellendi)
+    """
+    
+    # --- 1. Zamanlama ve Ping Başlangıcı ---
+    ping_start = time.time()
+    now = datetime.now()
+    tarih = now.strftime("%d %B %Y")
+    saat = now.strftime("%H:%M:%S")
+    gun = now.strftime("%A") # Örnek: Monday
 
-async def play_logs(message, streamtype):
-    chat_id = message.chat.id
-    sayı = await app.get_chat_members_count(chat_id)
-    toplamgrup = len(await get_served_chats())
-    aktifseslisayısı = len(await get_active_chats())
-    aktifvideosayısı = len(await get_active_video_chats())
+    # --- 2. Sistem İstatistikleri (psutil - Blocking) ---
+    # Bu işlemler (CPU/RAM) async değildir, bu yüzden 'gather' öncesi yapılır.
+    cpu_percent = psutil.cpu_percent(interval=0.1)
+    cpu_cores = psutil.cpu_count(logical=True)
+    os_info = f"{platform.system()} {platform.release()}"
+    
+    ram = psutil.virtual_memory()
+    ram_percent = ram.percent
+    
+    disk = psutil.disk_usage('/')
+    disk_percent = disk.percent
+    
+    # Uptime
+    boot_time_timestamp = psutil.boot_time()
+    uptime_seconds = int(time.time() - boot_time_timestamp)
+    # Uptime'ı HH:MM:SS formatına çevir
+    uptime_str = time.strftime("%H:%M:%S", time.gmtime(uptime_seconds))
+    if uptime_seconds > 86400: # Eğer 1 günden fazlaysa
+        uptime_days = uptime_seconds // 86400
+        uptime_str = f"{uptime_days} Gün, {uptime_str}"
 
-    if await is_on_off(LOG):
-        if message.chat.username:
-            chatusername = f"@{message.chat.username}"
+    # Ağ Kullanımı
+    net_io = psutil.net_io_counters()
+    net_sent_mb = f"{net_io.bytes_sent / (1024 * 1024):.2f}MB"
+    net_recv_mb = f"{net_io.bytes_recv / (1024 * 1024):.2f}MB"
+
+    # CPU Sıcaklığı (Her sistemde çalışmaz, N/A olarak ayarlandı)
+    # psutil.sensors_temperatures() kullanmak çok karmaşıktır
+    cpu_temp = "N/A" # Örnekteki gibi
+
+    # --- 3. Async Veri Toplama (API ve DB Çağrıları) ---
+    try:
+        results = await asyncio.gather(
+            is_on_off(LOG),
+            app.get_chat_members_count(message.chat.id),
+            get_served_chats(),
+            get_active_chats(),
+            get_active_video_chats(),
+            get_queries_count(), # Toplam sorgu sayısı (varsayılan)
+            app.get_me() # Ping'i ölçmek için basit bir API çağrısı
+        )
+        
+        log_is_on, member_count, served_chats, active_chats, active_video_chats, total_queries, _ = results
+        
+        # Ping'i hesapla (ms cinsinden)
+        ping_ms = f"{(time.time() - ping_start) * 1000:.0f} ms"
+
+    except Exception as e:
+        print(f"[play_logs] Veri toplama hatası: {e}")
+        # get_queries_count fonksiyonu yoksa hatayı yakala
+        if "get_queries_count" in str(e):
+            print("[play_logs] UYARI: 'get_queries_count' fonksiyonu bulunamadı. Toplam Sorgu 'N/A' olacak.")
+            total_queries = "N/A"
+            # Fonksiyon olmadan tekrar dene (ping için)
+            results = await asyncio.gather(
+                is_on_off(LOG),
+                app.get_chat_members_count(message.chat.id),
+                get_served_chats(),
+                get_active_chats(),
+                get_active_video_chats(),
+                app.get_me()
+            )
+            log_is_on, member_count, served_chats, active_chats, active_video_chats, _ = results
+            ping_ms = f"{(time.time() - ping_start) * 1000:.0f} ms"
         else:
-            chatusername = "Gizli Grup"
-        logger_text = f"""
+            return # Başka bir kritik hata varsa fonksiyondan çık
 
-
-Grup: {message.chat.title} [`{message.chat.id}`]
-Üye Sayısı:➜ {sayı}
-Kullanıcı: {message.from_user.mention}
-Kullanıcı Adı: @{message.from_user.username}
-Kullanıcı ID: `{message.from_user.id}`
-Grup Linki: {chatusername}
-Sorgu: {message.text}
-
-🌹🌹🌹🌹🌹🌹🌹🌹🌹
-
-Toplam Grup Sayısı:➜  {toplamgrup}
-
-Aktif Ses: {aktifseslisayısı}  ❄️  Aktif Video: {aktifvideosayısı}"""
-        if message.chat.id != LOGGER_ID:
-            try:
-                await app.send_message(
-                    LOGGER_ID,
-                    f"{logger_text}",
-                    disable_web_page_preview=True,
-                )
-                await app.set_chat_title(LOGGER_ID, f"AKTİF SES - {aktifseslisayısı}")
-            except:
-                pass
+    # Loglama kapalıysa veya mesaj zaten log grubundansa çık
+    if not log_is_on or message.chat.id == LOGGER_ID:
         return
+
+    # --- 4. Verileri Hazırlama ---
+    total_chats = len(served_chats)
+    active_voice_count = len(active_chats)
+    active_video_count = len(active_video_chats)
+
+    # Grup Linki
+    if message.chat.username:
+        chat_tag = f"@{message.chat.username}"
+    else:
+        chat_tag = "Yok / Özel Grup"
+
+    # Kullanıcı Adı
+    user_username = f"@{message.from_user.username}" if message.from_user.username else "Yok"
+
+    # Kaynak (Komut vs)
+    kaynak = "Komut" # Varsayılan
+
+    # --- 5. Log Metnini Oluşturma (İstenen Formatta) ---
+    logger_text = f"""🔊 **Yeni Müzik Oynatıldı**
+
+🕒 **Tarih/Saat:**
+📅 {tarih}
+⏰ {saat} ({gun})
+
+📚 **Grup:** {message.chat.title} [`{message.chat.id}`]
+🔗 **Grup Linki:** {chat_tag}
+👥 **Üye Sayısı:** {member_count}
+
+👤 **Kullanıcı:** {message.from_user.mention}
+✨ **Kullanıcı Adı:** {user_username}
+🔢 **Kullanıcı ID:** `{message.from_user.id}`
+🔍 **Kaynak:** {kaynak}
+
+🔎 **Sorgu:** {message.text}
+
+💻 **Sistem Durumu**
+├ 🧩 Sistem: {os_info} | {cpu_cores} Çekirdek
+├ 🖥️ CPU : {cpu_percent}% ✅
+├ 🧠 RAM : {ram_percent}% ✅
+├ 💾 Disk: {disk_percent}% ✅
+├ 🌡️ CPU Sıcaklığı: {cpu_temp}
+├ 🌐 Ağ Kullanımı : ⬆️ {net_sent_mb} / ⬇️ {net_recv_mb}
+└ ⏳ Uptime: {uptime_str}
+
+⚡ **Ping:** {ping_ms}
+
+📊 **Genel Durum**
+├ 🌐 Toplam Grup : {total_chats}
+├ 🔊 Aktif Ses   : {active_voice_count}
+├ 🎥 Aktif Video : {active_video_count}
+└ 📈 Toplam Sorgu: {total_queries}
+"""
+
+    # --- 6. Log Gönderme ve Başlık Güncelleme ---
+    try:
+        await app.send_message(
+            LOGGER_ID,
+            text=logger_text,
+            parse_mode=ParseMode.MARKDOWN, # Formatlamayı (kalın, kod) etkinleştir
+            disable_web_page_preview=True,
+        )
+        
+        # Log grubu başlığını da formatla
+        await app.set_chat_title(LOGGER_ID, f"🔊 Aktif Ses: {active_voice_count} | 🎥 Video: {active_video_count}")
+        
+    except Exception as e:
+        print(f"[play_logs] Log gönderilemedi veya başlık güncellenemedi: {e}")
