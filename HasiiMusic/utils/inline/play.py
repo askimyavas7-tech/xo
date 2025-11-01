@@ -10,9 +10,6 @@ CHANNEL_TEXT = "💙 𝐊𝐚𝐧𝐚𝐥"
 CHANNEL_URL = "https://t.me/Hebunbots"
 
 # İlerleme Çubuğu Ayarları
-PROGRESS_BAR_LENGTH = 8
-PROGRESS_FILLED = "▰"
-PROGRESS_EMPTY = "▱"
 
 # Zamanlayıcı Ayarları
 LAST_UPDATE_TIME: Dict[int, float] = {}
