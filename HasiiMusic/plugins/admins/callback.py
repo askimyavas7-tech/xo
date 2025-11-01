@@ -37,7 +37,7 @@ from HasiiMusic.utils.database import (
 )
 from HasiiMusic.utils.decorators import ActualAdminCB, languageCB
 from HasiiMusic.utils.formatters import seconds_to_min
-from HasiiMusic.utils.inline import close_markup, stream_markup, stream_markup_timer
+from HasiiMusic.utils.inline import close_markup, stream_markup
 from HasiiMusic.utils.stream.autoclear import auto_clean
   # Artık kullanılmayacak
 
