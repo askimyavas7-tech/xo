@@ -111,7 +111,11 @@ async def stream(
                     forceplay=forceplay,
                 )
                 # img = await get_thumb(vidid) # DEĞİŞİKLİK: Resim kaldırıldı
+                
+                # *** DÜZELTME: ReplyMarkupInvalid hatasını önlemek için basitleştirilmiş kontrol ***
                 button = stream_markup(_, chat_id)
+                reply_markup = InlineKeyboardMarkup(button) if button else None
+                
                 run = await app.send_message(  # DEĞİŞİKLİK: send_photo -> send_message
                     original_chat_id,
                     # photo=img, # DEĞİŞİKLİK: photo kaldırıldı
@@ -121,9 +125,11 @@ async def stream(
                         duration_min,
                         user_name,
                     ),
-                    reply_markup=InlineKeyboardMarkup(button),
+                    reply_markup=reply_markup, # Düzeltilmiş değişkeni kullan
                     disable_web_page_preview=True,  # DEĞİŞİKLİK: Önizleme kapatıldı
                 )
+                # *** DÜZELTME BİTİŞİ ***
+                
                 db[chat_id][0]["mystic"] = run
                 db[chat_id][0]["markup"] = "stream"
 
@@ -141,11 +147,16 @@ async def stream(
         final_position = len(db.get(chat_id) or []) - 1
         if final_position < 0:
             final_position = 0
+        
+        # *** DÜZELTME: close_markup kontrolü eklendi ***
+        close_buttons = close_markup(_)
+        close_reply_markup = InlineKeyboardMarkup(close_buttons) if close_buttons else None
+        
         return await app.send_photo(
             original_chat_id,
             photo=playlist_photo,
             caption=_["play_21"].format(final_position, link),
-            reply_markup=upl,
+            reply_markup=close_reply_markup,
         )
 
     elif streamtype == "youtube":
@@ -178,10 +189,14 @@ async def stream(
             )
             position = len(db.get(chat_id)) - 1
             button = aq_markup(_, chat_id)
+            
+            # *** DÜZELTME: aq_markup kontrolü eklendi ***
+            queue_reply_markup = InlineKeyboardMarkup(button) if button else None
+            
             await app.send_message(
                 chat_id=original_chat_id,
                 text=_["queue_4"].format(position, title[:27], duration_min, user_name),
-                reply_markup=InlineKeyboardMarkup(button),
+                reply_markup=queue_reply_markup,
             )
         else:
             if not forceplay:
@@ -206,7 +221,11 @@ async def stream(
                 forceplay=forceplay,
             )
             # img = await get_thumb(vidid) # DEĞİŞİKLİK: Resim kaldırıldı
+            
+            # *** DÜZELTME: ReplyMarkupInvalid hatasını önlemek için basitleştirilmiş kontrol ***
             button = stream_markup(_, chat_id)
+            reply_markup = InlineKeyboardMarkup(button) if button else None
+            
             run = await app.send_message(  # DEĞİŞİKLİK: send_photo -> send_message
                 original_chat_id,
                 # photo=img, # DEĞİŞİKLİK: photo kaldırıldı
@@ -216,9 +235,11 @@ async def stream(
                     duration_min,
                     user_name,
                 ),
-                reply_markup=InlineKeyboardMarkup(button),
+                reply_markup=reply_markup,
                 disable_web_page_preview=True,  # DEĞİŞİKLİK: Önizleme kapatıldı
             )
+            # *** DÜZELTME BİTİŞİ ***
+            
             db[chat_id][0]["mystic"] = run
             db[chat_id][0]["markup"] = "stream"
 
@@ -243,10 +264,14 @@ async def stream(
             )
             position = len(db.get(chat_id)) - 1
             button = aq_markup(_, chat_id)
+
+            # *** DÜZELTME: aq_markup kontrolü eklendi ***
+            queue_reply_markup = InlineKeyboardMarkup(button) if button else None
+
             await app.send_message(
                 chat_id=original_chat_id,
                 text=_["queue_4"].format(position, title, duration_min, user_name),
-                reply_markup=InlineKeyboardMarkup(button),
+                reply_markup=queue_reply_markup,
             )
         else:
             if not forceplay:
@@ -264,16 +289,22 @@ async def stream(
                 "audio",
                 forceplay=forceplay,
             )
+            
+            # *** DÜZELTME: ReplyMarkupInvalid hatasını önlemek için basitleştirilmiş kontrol ***
             button = stream_markup(_, chat_id)
+            reply_markup = InlineKeyboardMarkup(button) if button else None
+            
             run = await app.send_message(  # DEĞİŞİKLİK: send_photo -> send_message
                 original_chat_id,
                 # photo=config.SOUNCLOUD_IMG_URL, # DEĞİŞİKLİK: photo kaldırıldı
                 text=_["stream_1"].format(  # DEĞİŞİKLİK: caption -> text
                     config.SUPPORT_CHAT, title, duration_min, user_name
                 ),
-                reply_markup=InlineKeyboardMarkup(button),
+                reply_markup=reply_markup,
                 disable_web_page_preview=True,  # DEĞİŞİKLİK: Önizleme kapatıldı
             )
+            # *** DÜZELTME BİTİŞİ ***
+            
             db[chat_id][0]["mystic"] = run
             db[chat_id][0]["markup"] = "tg"
 
@@ -299,10 +330,14 @@ async def stream(
             )
             position = len(db.get(chat_id)) - 1
             button = aq_markup(_, chat_id)
+            
+            # *** DÜZELTME: aq_markup kontrolü eklendi ***
+            queue_reply_markup = InlineKeyboardMarkup(button) if button else None
+
             await app.send_message(
                 chat_id=original_chat_id,
                 text=_["queue_4"].format(position, title[:27], duration_min, user_name),
-                reply_markup=InlineKeyboardMarkup(button),
+                reply_markup=queue_reply_markup,
             )
         else:
             if not forceplay:
@@ -322,16 +357,22 @@ async def stream(
             )
             if is_video:
                 await add_active_video_chat(chat_id)
+            
+            # *** DÜZELTME: ReplyMarkupInvalid hatasını önlemek için basitleştirilmiş kontrol ***
             button = stream_markup(_, chat_id)
+            reply_markup = InlineKeyboardMarkup(button) if button else None
+
             run = await app.send_message(  # DEĞİŞİKLİK: send_photo -> send_message
                 original_chat_id,
                 # photo=config.TELEGRAM_VIDEO_URL if is_video else config.TELEGRAM_AUDIO_URL, # DEĞİŞİKLİK: photo kaldırıldı
                 text=_["stream_1"].format(  # DEĞİŞİKLİK: caption -> text
                     link, title, duration_min, user_name
                 ),
-                reply_markup=InlineKeyboardMarkup(button),
+                reply_markup=reply_markup,
                 disable_web_page_preview=True,  # DEĞİŞİKLİK: Önizleme kapatıldı
             )
+            # *** DÜZELTME BİTİŞİ ***
+            
             db[chat_id][0]["mystic"] = run
             db[chat_id][0]["markup"] = "tg"
 
@@ -356,10 +397,14 @@ async def stream(
             )
             position = len(db.get(chat_id)) - 1
             button = aq_markup(_, chat_id)
+            
+            # *** DÜZELTME: aq_markup kontrolü eklendi ***
+            queue_reply_markup = InlineKeyboardMarkup(button) if button else None
+
             await app.send_message(
                 chat_id=original_chat_id,
                 text=_["queue_4"].format(position, title, duration_min, user_name),
-                reply_markup=InlineKeyboardMarkup(button),
+                reply_markup=queue_reply_markup,
             )
         else:
             if not forceplay:
@@ -390,7 +435,11 @@ async def stream(
                 forceplay=forceplay,
             )
             # img = await get_thumb(vidid) # DEĞİŞİKLİK: Resim kaldırıldı
+            
+            # *** DÜZELTME: ReplyMarkupInvalid hatasını önlemek için basitleştirilmiş kontrol ***
             button = stream_markup(_, chat_id)
+            reply_markup = InlineKeyboardMarkup(button) if button else None
+
             run = await app.send_message(  # DEĞİŞİKLİK: send_photo -> send_message
                 original_chat_id,
                 # photo=img, # DEĞİŞİKLİK: photo kaldırıldı
@@ -400,9 +449,11 @@ async def stream(
                     duration_min,
                     user_name,
                 ),
-                reply_markup=InlineKeyboardMarkup(button),
+                reply_markup=reply_markup,
                 disable_web_page_preview=True,  # DEĞİŞİKLİK: Önizleme kapatıldı
             )
+            # *** DÜZELTME BİTİŞİ ***
+            
             db[chat_id][0]["mystic"] = run
             db[chat_id][0]["markup"] = "tg"
 
@@ -424,9 +475,13 @@ async def stream(
             )
             position = len(db.get(chat_id)) - 1
             button = aq_markup(_, chat_id)
+            
+            # *** DÜZELTME: aq_markup kontrolü eklendi ***
+            queue_reply_markup = InlineKeyboardMarkup(button) if button else None
+
             await mystic.edit_text(
                 text=_["queue_4"].format(position, title, duration_min, user_name),
-                reply_markup=InlineKeyboardMarkup(button),
+                reply_markup=queue_reply_markup,
             )
         else:
             if not forceplay:
@@ -448,14 +503,20 @@ async def stream(
                 "video" if is_video else "audio",
                 forceplay=forceplay,
             )
+            
+            # *** DÜZELTME: ReplyMarkupInvalid hatasını önlemek için basitleştirilmiş kontrol ***
             button = stream_markup(_, chat_id)
+            reply_markup = InlineKeyboardMarkup(button) if button else None
+
             run = await app.send_message(  # DEĞİŞİKLİK: send_photo -> send_message
                 original_chat_id,
                 # photo=config.STREAM_IMG_URL, # DEĞİŞİKLİK: photo kaldırıldı
                 text=_["stream_2"].format(user_name),  # DEĞİŞİKLİK: caption -> text
-                reply_markup=InlineKeyboardMarkup(button),
+                reply_markup=reply_markup,
                 disable_web_page_preview=True,  # DEĞİŞİKLİK: Önizleme kapatıldı
             )
+            # *** DÜZELTME BİTİŞİ ***
+            
             db[chat_id][0]["mystic"] = run
             db[chat_id][0]["markup"] = "tg"
             await mystic.delete()
