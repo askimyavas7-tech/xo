@@ -190,13 +190,13 @@ BANNED_USERS = BannedUsersManager()
 adminlist, lyrical, votemode, autoclean, confirmer = {}, {}, {}, [], {}
 
 # ── Minimal validation ─────────────────────────────────────────────────────────
-if SUPPORT_CHANNEL and not re.match(r"^https?://", SUPPORT_CHANNEL):
+if SUPPORT_CHANNEL and not re.match(r"^https://t.me/prenses_muzik_duyuru", SUPPORT_CHANNEL):
     raise SystemExit(
         "[ERROR] - Invalid SUPPORT_CHANNEL URL. Must start with https://")
 
-if SUPPORT_CHAT and not re.match(r"^https?://", SUPPORT_CHAT):
+if SUPPORT_CHAT and not re.match(r"^https://t.me/prenses_muzik_duyuru", SUPPORT_CHAT):
     raise SystemExit(
-        "[ERROR] - Invalid SUPPORT_CHAT URL. Must start with https://")
+        "[ERROR] - Invalid SUPPORT_CHAT URL. Must start with https://t.me/prenses_muzik_duyuru")
 
 if not COOKIE_URL:
     raise SystemExit("[ERROR] - COOKIE_URL is required.")
